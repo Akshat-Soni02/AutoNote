@@ -31,7 +31,7 @@ function waitForElement(selector, timeout = 5000) {
       const transcriptJson = JSON.parse(transcriptRaw);
       const textOnly = transcriptJson.map((entry) => entry.text).filter(Boolean);
       console.log(textOnly);
-      const paragraph = textOnly.join('@ '); // Join to format into bullets
+      const paragraph = textOnly.join('. '); // Join to format into bullets
   
       // Get title of the video
       const heading = document.querySelector("h1")?.innerText || "New Video Section";

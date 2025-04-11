@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { google } from "googleapis";
 import {appendToken} from "../middleware/authentication.ts";
+import { GoogleGenAI } from "@google/genai";
 
 // const auth = new google.auth.OAuth2({
 //     clientId: process.env.GOOGLE_CLIENT_ID,
@@ -58,9 +59,18 @@ app.post("/new-document",appendToken, async (req, res) => {
     
 })
 
+async function geminiRes(contents: string) {
+  const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_GEMINI_KEY });
+  const response = await ai.models.generateContent({
+    model: "gemini-2.0-flash",
+    contents,
+  });
+  return response?.text;
+}
+
 app.post("/write-section", appendToken, async (req, res) => {
     try {
-      const { documentId, heading, paragraph } = req.body;
+      let { documentId, heading, paragraph } = req.body;
       const access_token = req.token;
       console.log("here is the token", access_token);
   
@@ -71,9 +81,22 @@ app.post("/write-section", appendToken, async (req, res) => {
       const endIndex = lastElement?.endIndex || 1;
       const insertIndex = Math.max(endIndex - 1, 1);
       console.log(endIndex);
+      let summerizedPara = paragraph;
+      if(paragraph) {
+        summerizedPara = await geminiRes("summerize and also give a title for the para: " + paragraph);
+      }
       // console.log(paragraph);
+      const lines = summerizedPara.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+      if (lines[0].startsWith("**Title:")) {
+        heading = lines[0].replace("**Title:", "").replace("**", "").trim();
+        paragraph = lines.slice(1).join(" ");
+      } else {
+        paragraph = summerizedPara;
+      }
+
       const points = paragraph
-      .split(/[@]/) // split based on comma
+      .split(/[.]/) // split based on comma
       .map(p => p.trim())
       .filter(p => p.length > 0);
 
