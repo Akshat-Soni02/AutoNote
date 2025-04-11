@@ -1,0 +1,26 @@
+{
+    "manifest_version": 3,
+    "name": "autonote",
+    "version": "1.0",
+    "permissions": ["identity", "storage", "activeTab", "scripting"],
+    "host_permissions": ["https://*.cloudskillsboost.google/*"],
+    "oauth2": {
+      "client_id": "111869841599-1pgni9akf4u2b3arprprmu1vaptisv9f.apps.googleusercontent.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/documents",
+        "https://www.googleapis.com/auth/userinfo.email"
+      ]
+    },
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "index.html"
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://*.cloudskillsboost.google/*"],
+        "js": ["content.js"]
+      }
+    ]
+  }  
