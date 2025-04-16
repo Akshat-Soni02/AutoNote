@@ -72,7 +72,7 @@ app.post("/write-section", appendToken, async (req, res) => {
     try {
       let { documentId, heading, paragraph } = req.body;
       const access_token = req.token;
-      console.log("here is the token", access_token);
+      // console.log("here is the token", access_token);
   
       auth.setCredentials({ access_token });
   
